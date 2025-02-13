@@ -68,4 +68,16 @@ export const questions = [
     { value: "e", title: "Como posso entrar em contato com o suporte ao cliente?", text: "Você pode entrar em contato com nosso suporte ao cliente através do e-mail mlucas4330@gmail.com." }
 ]
 
+export const slides = [
+    { id: 1, type: 'first' },
+    { id: 2, type: 'seconds' },
+    { id: 3, type: 'minutes' },
+    { id: 4, type: 'hours' },
+    { id: 5, type: 'days' },
+    { id: 6, type: 'weeks' },
+    { id: 7, type: 'months' },
+    { id: 8, type: 'years' },
+    { id: 9, type: 'last' }
+]
+
 export const dateLastUpdate = '06/12/2024'

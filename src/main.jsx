@@ -5,26 +5,20 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import PrivacyPolicy from './pages/PrivacyPolicy.jsx'
 import TermsOfUse from './pages/TermsOfUse.jsx'
 import { Theme } from '@chakra-ui/react'
-import { SongProvider } from './providers/SongProvider.jsx'
 import { StrictMode } from 'react'
-import { StartDateProvider } from '@/providers/StartDateProvider'
 
 createRoot(document.getElementById('root')).render(
     <StrictMode>
         <Provider>
-            <StartDateProvider>
-                <SongProvider>
-                    <Theme appearance='light' colorPalette={'pink'}>
-                        <BrowserRouter>
-                            <Routes>
-                                <Route path="/" element={<App />} />
-                                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                                <Route path="/terms-of-use" element={<TermsOfUse />} />
-                            </Routes>
-                        </BrowserRouter>
-                    </Theme>
-                </SongProvider>
-            </StartDateProvider>
+            <Theme appearance='light' colorPalette={'pink'}>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/" element={<App />} />
+                        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                        <Route path="/terms-of-use" element={<TermsOfUse />} />
+                    </Routes>
+                </BrowserRouter>
+            </Theme>
         </Provider>
     </StrictMode>
 )
