@@ -8,8 +8,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
+import { Check, Pipette } from 'lucide-react'
 import * as React from 'react'
-import { LuCheck, LuPipette } from 'react-icons/lu'
 
 export const ColorPickerTrigger = React.forwardRef(
   function ColorPickerTrigger(props, ref) {
@@ -86,7 +86,7 @@ export const ColorPickerEyeDropper = React.forwardRef(
     return (
       <ChakraColorPicker.EyeDropperTrigger asChild>
         <IconButton size='xs' variant='outline' ref={ref} {...props}>
-          <LuPipette />
+          <Pipette />
         </IconButton>
       </ChakraColorPicker.EyeDropperTrigger>
     )
@@ -117,7 +117,7 @@ export const ColorPickerSwatchTrigger = React.forwardRef(
         {children || (
           <ChakraColorPicker.Swatch boxSize={swatchSize} value={props.value}>
             <ChakraColorPicker.SwatchIndicator>
-              <LuCheck />
+              <Check />
             </ChakraColorPicker.SwatchIndicator>
           </ChakraColorPicker.Swatch>
         )}

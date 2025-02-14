@@ -1,6 +1,6 @@
 import { Box, Steps as ChakraSteps } from '@chakra-ui/react'
+import { Check } from 'lucide-react'
 import * as React from 'react'
-import { LuCheck } from 'react-icons/lu'
 
 export const StepsItem = React.forwardRef(function StepsItem(props, ref) {
   const { title, description, completedIcon, icon, ...rest } = props
@@ -9,7 +9,7 @@ export const StepsItem = React.forwardRef(function StepsItem(props, ref) {
       <ChakraSteps.Trigger>
         <ChakraSteps.Indicator>
           <ChakraSteps.Status
-            complete={completedIcon || <LuCheck />}
+            complete={completedIcon || <Check />}
             incomplete={icon || <ChakraSteps.Number />}
           />
         </ChakraSteps.Indicator>

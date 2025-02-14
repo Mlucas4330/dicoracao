@@ -17,8 +17,8 @@ import {
   useFileUploadContext,
   useRecipe,
 } from '@chakra-ui/react'
+import { File, Upload, X } from 'lucide-react'
 import * as React from 'react'
-import { LuFile, LuUpload, LuX } from 'react-icons/lu'
 
 export const FileUploadRoot = React.forwardRef(
   function FileUploadRoot(props, ref) {
@@ -38,7 +38,7 @@ export const FileUploadDropzone = React.forwardRef(
     return (
       <ChakraFileUpload.Dropzone ref={ref} {...rest}>
         <Icon fontSize='xl' color='fg.muted'>
-          <LuUpload />
+          <Upload />
         </Icon>
         <ChakraFileUpload.DropzoneContent>
           <div>{label}</div>
@@ -56,7 +56,7 @@ const FileUploadItem = React.forwardRef(function FileUploadItem(props, ref) {
     <ChakraFileUpload.Item file={file} ref={ref}>
       <ChakraFileUpload.ItemPreview asChild>
         <Icon fontSize='lg' color='fg.muted'>
-          <LuFile />
+          <File />
         </Icon>
       </ChakraFileUpload.ItemPreview>
 
@@ -72,7 +72,7 @@ const FileUploadItem = React.forwardRef(function FileUploadItem(props, ref) {
       {clearable && (
         <ChakraFileUpload.ItemDeleteTrigger asChild>
           <IconButton variant='ghost' color='fg.muted' size='xs'>
-            <LuX />
+            <X />
           </IconButton>
         </ChakraFileUpload.ItemDeleteTrigger>
       )}
