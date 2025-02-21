@@ -1,10 +1,8 @@
-import { label } from "framer-motion/client"
-
 export const steps = [
     {
         step: 1,
         title: 'Crie uma Experiência Única',
-        description: 'Compartilhe a data que marca o início da sua jornada juntos e escolha uma música do YouTube que represente esse momento especial. Com essas informações, vamos criar algo único, refletindo a história de vocês de maneira personalizada.'
+        description: 'Compartilhe a data que marca o início da sua jornada juntos e escolha uma música do YouTube que represente esse momento especial.'
     },
     {
         step: 2,
@@ -18,47 +16,6 @@ export const steps = [
     }
 ]
 
-export const plans = [
-    {
-        title: '19.90',
-        description: 'Básico',
-        value: 'basic',
-        benefits: [
-            {
-                has: true,
-                label: 'Personalização Completa',
-            },
-            {
-                has: false,
-                label: 'Música Personalizada'
-            },
-            {
-                has: false,
-                label: '1 Ano de Acesso'
-            }
-        ]
-    },
-    {
-        title: '29.90',
-        description: 'Avançado',
-        value: 'advanced',
-        benefits: [
-            {
-                has: true,
-                label: 'Personalização Completa',
-            },
-            {
-                has: true,
-                label: 'Música Personalizada'
-            },
-            {
-                has: true,
-                label: 'Pra Sempre'
-            }
-        ]
-    },
-]
-
 export const questions = [
     { value: "a", title: "Quais são as formas de pagamento? Tem como parcelar?", text: "No momento, aceitamos pagamentos por Pix, boleto e cartão de crédito até 2x" },
     { value: "b", title: "Quanto tempo demora para receber o QR Code no e-mail?", text: "Após a confirmação do pagamento você receberá o QR Code na hora." },
@@ -69,15 +26,13 @@ export const questions = [
 ]
 
 export const slides = [
-    { id: 1, type: 'first' },
-    { id: 2, type: 'seconds' },
-    { id: 3, type: 'minutes' },
-    { id: 4, type: 'hours' },
-    { id: 5, type: 'days' },
-    { id: 6, type: 'weeks' },
-    { id: 7, type: 'months' },
-    { id: 8, type: 'years' },
-    { id: 9, type: 'last' }
+    { id: 1, type: 'seconds', text: 'Cada segundo ao seu lado é precioso...' },
+    { id: 2, type: 'minutes', text: 'Minutos que se transformaram em memórias inesquecíveis...' },
+    { id: 3, type: 'hours', text: 'Horas de conversas, sorrisos e momentos especiais...' },
+    { id: 4, type: 'days', text: 'Dias que parecem ter passado em um piscar de olhos...' },
+    { id: 5, type: 'weeks', text: 'Semanas repletas de amor e cumplicidade...' },
+    { id: 6, type: 'months', text: 'Meses que passaram voando, mas nos pousaram em um amor sólido...' },
+    { id: 7, type: 'years', text: 'Anos que passaram, amadurecendo nosso amor, nos tornando mais fortes...' },
 ]
 
 export const dateLastUpdate = '06/12/2024'

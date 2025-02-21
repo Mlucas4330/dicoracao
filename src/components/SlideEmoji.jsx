@@ -2,18 +2,18 @@ import React, { memo } from 'react'
 import { Box } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 
-function SlideEmoji({ emoji }) {
+function SlideEmoji() {
     const MotionBox = motion.create(Box)
 
     return (
         <>
             {
-                Array.from({ length: 25 }).map((_, i) => (
+                Array.from({ length: 15 }).map((_, i) => (
                     <MotionBox
                         key={i}
                         position="absolute"
                         top="0"
-                        left={`${Math.floor(Math.random() * 100)}%`}
+                        left={`${Math.floor(Math.random() * 90)}%`}
                         fontSize={Math.floor(Math.random() * (50 - 10) + 10)}
                         initial={{ y: '-50%', opacity: 0 }}
                         animate={{ y: `${100 * 7}% `, opacity: [0, 1, 1, 0], }}
@@ -25,7 +25,7 @@ function SlideEmoji({ emoji }) {
                             ease: 'easeOut'
                         }}
                     >
-                        {emoji}
+                        ❤️
                     </MotionBox>
                 ))
             }

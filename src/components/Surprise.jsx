@@ -3,6 +3,7 @@ import React from 'react'
 import Swiper from 'swiper'
 import { EffectFade } from 'swiper/modules'
 import { SwiperSlide } from 'swiper/react'
+import { slides } from '../constants'
 
 function Surprise() {
     return (
