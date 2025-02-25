@@ -29,11 +29,10 @@ function Preview() {
     const [solved, setSolved] = useState(false)
     const [promessed, setPromessed] = useState(false)
     const [finalMessage, setFinalMessage] = useState('')
+    const [finalMessageImage, setFinalMessageImage] = useState('')
     const [videoId, setVideoId] = useState()
-    const [image, setImage] = useState({ seconds: '/image.png', minutes: '/image.png', hours: '/image.png', days: '/image.png', weeks: '/image.png', months: '/image.png', years: '/image.png' })
-    const [imageText, setImageText] = useState({
-        seconds: 'Deixe sua mensagem aqui', minutes: 'Deixe sua mensagem aqui', hours: 'Deixe sua mensagem aqui', days: 'Deixe sua mensagem', weeks: 'Deixe sua mensagem aqui', months: 'Deixe sua mensagem aqui', years: 'Deixe sua mensagem aqui'
-    })
+    const [image, setImage] = useState({})
+    const [imageText, setImageText] = useState({})
 
     const handleCreate = async () => {
         try {
@@ -115,8 +114,8 @@ function Preview() {
     return (
         <>
             <Box id='create' shadow={'lg'} my={16} p={8} rounded={'md'}>
-                <Flex gap={6} wrap={'wrap'}>
-                    <Box h={'vh'} flex={2}>
+                <Flex gap={6} wrap={'wrap'} align={'center'}>
+                    <Box flex={2}>
                         <Fieldset.Root>
                             <Fieldset.Content>
                                 <Field label={<Flex gap={2}> <Icon color={'pink.400'}><CalendarHeart /></Icon> Início do Relacionamento</Flex>}>
@@ -127,30 +126,38 @@ function Preview() {
                                     <Input value={song} onChange={e => setSong(e.target.value)} placeholder='https://www.youtube.com/watch?v=igIfiqqVHtA' />
                                 </Field>
 
-                                <Flex gap={2} overflow={'auto'} h={80} direction={'column'}>
+                                <Flex gap={2} overflow={'auto'} h={44} pr={1} direction={'column'}>
                                     {slides.map(slide => (
                                         <Box key={'form' + slide.id}>
                                             {
                                                 <Group w={'full'}>
                                                     <Field label={<Flex gap={2}><Icon color={'pink.400'}><Camera /></Icon> Foto para a polaroid</Flex>}>
-                                                        <FileUploadRoot flex={1} value={image[slide.type]} onFileChange={({ acceptedFiles }) => setImage(prev => ({
-                                                            ...prev, [slide.type]: URL.createObjectURL(acceptedFiles[0])
+                                                        <FileUploadRoot flex={1} value={image[slide.type] && URL.createObjectURL(image[slide.type])} onFileChange={({ acceptedFiles }) => setImage(prev => ({
+                                                            ...prev, [slide.type]: acceptedFiles[0]
                                                         }))}>
                                                             <FileInput placeholder={'Foto de vocês'} />
                                                         </FileUploadRoot>
                                                     </Field>
                                                     <Field label={<Flex gap={2}><Icon color={'pink.400'}><NotebookPen /></Icon> Texto para a polaroid</Flex>}>
-                                                        <Input value={imageText[slide.type]} minLength={3} maxLength={35} onChange={e => setImageText(prev => ({ ...prev, [slide.type]: e.target.value }))} />
+                                                        <Input value={imageText[slide.type]} placeholder='Deixa sua mensagem aqui' minLength={3} maxLength={35} onChange={e => setImageText(prev => ({ ...prev, [slide.type]: e.target.value }))} />
                                                     </Field>
                                                 </Group>
                                             }
                                         </Box>
                                     ))}
                                 </Flex>
+
                                 <Field label={<Flex gap={2}><Icon color={'pink.400'}><Puzzle /></Icon> Foto para o quebra cabeça</Flex>}>
-                                    <FileUploadRoot value={puzzleImage} onFileChange={({ acceptedFiles }) => setPuzzleImage(URL.createObjectURL(acceptedFiles[0]))}><FileInput placeholder={'Foto de vocês '} />
+                                    <FileUploadRoot value={puzzleImage} onFileChange={({ acceptedFiles }) => setPuzzleImage(acceptedFiles[0])}><FileInput placeholder={'Foto de vocês '} />
                                     </FileUploadRoot>
                                 </Field>
+
+                                <Field label={<Flex gap={2}><Icon color={'pink.400'}><Camera /></Icon> Foto para a mensagem final</Flex>}>
+                                    <FileUploadRoot value={finalMessageImage} onFileChange={({ acceptedFiles }) => setFinalMessageImage(acceptedFiles[0])}><FileInput placeholder={'Foto de vocês'} />
+                                    </FileUploadRoot>
+                                </Field>
+
+
                                 <Field label={<Flex gap={2}><Icon color={'pink.400'}><NotebookPen /></Icon> Preencha sua mensagem final </Flex>}>
                                     <Textarea autoresize value={finalMessage} onChange={e => setFinalMessage(e.target.value)} minLength={3} maxLength={600} placeholder={'Se declare aqui ❤️'} />
                                 </Field>
@@ -187,7 +194,7 @@ function Preview() {
                                             <Presence mt={12} animationName={{ _open: `slide-from-left-full`, _closed: `slide-to-right-full`, }} zIndex={2} animationDuration='slowest' present={step === slide.id}>
                                                 <Box rotate={slide.id % 2 ? 15 : -15} bg={'white'} p={4} rounded={'sm'} shadow={'lg'} minH={64} w={64}>
                                                     <Image h={'full'} w={'full'} aspectRatio={4 / 3} src={image[slide.type]} rounded={'xs'} alt='Foto do casal' />
-                                                    <Text textAlign={'center'} fontFamily={'cursive'} mt={4} whiteSpace={'normal'} wordBreak={'break-word'}>{imageText[slide.type]}</Text>
+                                                    <Text textAlign={'center'} fontFamily={'cursive'} fontStyle={'italic'} mt={4} whiteSpace={'normal'} wordBreak={'break-word'}>{imageText[slide.type]}</Text>
                                                 </Box>
                                             </Presence>
                                         }
@@ -199,7 +206,7 @@ function Preview() {
                                     <Heading color={'white'} size={'2xl'} fontWeight={'bold'}>Você era a peça que faltava na minha vida...</Heading>
                                 </Presence>
                                 <Presence mt={4} animationName={{ _open: 'slide-from-bottom-full', _closed: 'slide-to-bottom-full' }} animationDuration='slowest' lazyMount present={step === 8}>
-                                    <JigsawPuzzle imageSrc={puzzleImage} rows={3} columns={3} onSolved={() => setSolved(true)} />
+                                    <JigsawPuzzle imageSrc={puzzleImage && URL.createObjectURL(puzzleImage)} rows={3} columns={3} onSolved={() => setSolved(true)} />
                                 </Presence>
                                 <Presence mt={4} animationName={{ _open: 'slide-from-bottom-full', _closed: 'slide-to-bottom-full' }} animationDuration='slowest' lazyMount present={step === 8 && solved}>
                                     <Heading color={'white'} size={'2xl'} fontWeight={'bold'}>Parabéns!</Heading>
@@ -207,10 +214,10 @@ function Preview() {
                             </StepsContent>
                             <StepsContent h={'full'} py={16} px={8} textAlign={'center'} background={`linear-gradient(135deg, pink 0%, salmon 100%)`} index={9}>
                                 <Presence animationName={{ _open: 'slide-from-bottom-full', _closed: 'slide-to-bottom-full' }} animationDuration='slowest' lazyMount present={step === 9}>
-                                    <Image src={'/image.png'} shadow={'md'} border={'thick solid white'} />
+                                    <Image maxH={64} justifySelf={'center'} rounded={'xs'} src={finalMessageImage && URL.createObjectURL(finalMessageImage)} shadow={'md'} border={'thick solid white'} />
                                 </Presence>
                                 <Presence mt={6} animationName={{ _open: 'slide-from-bottom-full', _closed: 'slide-to-bottom-full' }} animationDuration='slowest' lazyMount present={step === 9}>
-                                    <Text overflow={'auto'} scrollbar={'hidden'} maxH={'80'} color={'white'} textAlign={'center'} fontSize={'lg'} whiteSpace={'normal'} wordBreak={'break-word'} fontWeight={'semibold'}>{finalMessage}</Text>
+                                    <Text overflow={'auto'} scrollbar={'hidden'} maxH={'64'} color={'white'} textAlign={'center'} fontSize={'lg'} whiteSpace={'normal'} wordBreak={'break-word'} fontWeight={'semibold'}>{finalMessage}</Text>
                                 </Presence>
                             </StepsContent>
                             <StepsContent display={'flex'} alignItems={'center'} flexDirection={'column'} justifyContent={'center'} h={'full'} py={16} px={8} textAlign={'center'} background={`linear-gradient(135deg, pink 0%, salmon 100%)`} index={10}>
@@ -251,10 +258,10 @@ function Preview() {
 
                             <StepsContent h={'full'} py={16} px={8} textAlign={'center'} background={`linear-gradient(135deg, pink 0%, salmon 100%)`} index={11}>
                                 <Presence animationName={{ _open: 'slide-from-bottom-full', _closed: 'slide-to-bottom-full' }} animationDuration='slowest' lazyMount present={step === 11}>
-                                    <Image h={72} w={'full'} src={'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGE5dzhmOXBzM2dqZzkwOXl5bDF6ODBrZHo3enE5N213djgyamg4NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3lj7wxDu4hcDC/giphy.gif'} />
+                                    <Image rounded={'xs'} shadow={'md'} border={'thick solid white'} h={64} w={'full'} src={'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGE5dzhmOXBzM2dqZzkwOXl5bDF6ODBrZHo3enE5N213djgyamg4NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3lj7wxDu4hcDC/giphy.gif'} />
                                 </Presence>
                                 <Presence mt={8} animationName={{ _open: 'slide-from-bottom-full', _closed: 'slide-to-bottom-full' }} animationDuration='slowest' lazyMount present={step === 11}>
-                                    <Text color={'white'} textAlign={'center'} fontSize={'xl'} fontWeight={'semibold'}>
+                                    <Text overflow={'auto'} scrollbar={'hidden'} maxH={'32'} color={'white'} textAlign={'center'} fontSize={'lg'} whiteSpace={'normal'} wordBreak={'break-word'} fontWeight={'semibold'}>
                                         Este presente é apenas um pequeno reflexo de tudo o que você significa para mim. Cada dia ao seu lado é uma nova aventura, e eu mal posso esperar para continuar escrevendo nossa história juntos. Eu te amo mais do que palavras podem expressar. ❤️ Espero que tenha gostado!
                                     </Text>
                                 </Presence>
