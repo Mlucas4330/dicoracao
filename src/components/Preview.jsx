@@ -14,6 +14,7 @@ import { JigsawPuzzle } from 'react-jigsaw-puzzle/lib';
 import 'react-jigsaw-puzzle/lib/jigsaw-puzzle.css';
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { initMercadoPago } from '@mercadopago/sdk-react'
 
 function Preview() {
     const MotionBox = motion.create(Box)
@@ -21,6 +22,7 @@ function Preview() {
     const [startDate, setStartDate] = useState('')
     const [step, setStep] = useState(0)
     const [volume, setVolume] = useState()
+    const [loading, setLoading] = useState(false)
     const [transcript, setTranscript] = useState([])
     const recognition = window.SpeechRecognition || window.webkitSpeechRecognition ? new (window.SpeechRecognition || window.webkitSpeechRecognition)() : null
     const [isListening, setIsListening] = useState(false)
@@ -34,8 +36,11 @@ function Preview() {
     const [image, setImage] = useState({})
     const [imageText, setImageText] = useState({})
 
+
     const handleCreate = async () => {
         try {
+            setLoading(true)
+
             const form = new FormData()
 
             for (const key in image) { form.append(`image[${key}]`, image[key]) }
@@ -45,16 +50,18 @@ function Preview() {
             form.append('finalMessage', finalMessage)
             form.append('puzzleImage', puzzleImage)
 
-            const response = await fetch('/api/surprises', {
+            const response = await fetch('http://localhost:3000/api/surprises', {
                 method: 'POST',
                 body: form,
             })
 
-            const surpriseId = await response.json()
+            const preference = await response.json()
 
-            navigate(`/surprises/${surpriseId}`)
+            window.location = preference.init_point
         } catch (error) {
             console.error(error)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -110,6 +117,10 @@ function Preview() {
         if (!song) return
         handleSong()
     }, [song])
+
+    useEffect(() => {
+        initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY)
+    }, [])
 
     return (
         <>
@@ -282,7 +293,7 @@ function Preview() {
                         </StepsRoot>
                     </Box>
                 </Flex >
-                <Button onClick={handleCreate} w={'full'} py={8} size={'lg'} mt={4}>Criar minha surpresa</Button>
+                <Button onClick={handleCreate} loading={loading} loadingText={'Criar minha surpresa'} w={'full'} py={8} size={'lg'} mt={4}>Criar minha surpresa</Button>
             </Box >
             <VideoPlayer videoId={videoId} volume={volume} />
         </>

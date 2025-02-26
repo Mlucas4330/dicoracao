@@ -1,12 +1,17 @@
 import express from 'express'
 import multer from 'multer'
 import { DataSource, EntitySchema } from 'typeorm'
+import { MercadoPagoConfig, Preference } from 'mercadopago'
 import path from 'path'
 import fs from 'fs'
+import cors from 'cors'
+import dotenv from 'dotenv'
 
 const app = express()
 
 dotenv.config()
+
+const client = new MercadoPagoConfig({ accessToken: process.env.MP_ACCESS_TOKEN })
 
 const Surprise = new EntitySchema({
     name: 'Surprise',
@@ -55,6 +60,15 @@ const Surprise = new EntitySchema({
         finalMessage: {
             type: 'varchar',
             length: 600,
+        },
+        paymentStatus: {
+            type: 'varchar',
+            length: 20,
+            default: 'pending'
+        },
+        preferenceId: {
+            type: 'varchar',
+            length: 20
         }
     }
 })
@@ -70,8 +84,17 @@ const datasource = new DataSource({
     entities: [Surprise]
 })
 
+const moveFiles = async (files, folder) => {
+    return Promise.all(files.map(file => {
+        const tempPath = path.join('uploads', file.filename)
+        const targetPath = path.join(folder, file.filename)
+        return fs.promises.rename(tempPath, targetPath)
+    }))
+}
+
 datasource.initialize().then(() => {
-    app.use(express.static('public'))
+    app.use(express.static('dist'))
+    app.use(cors())
 
     const storage = multer.diskStorage({
         destination: (req, file, cb) => {
@@ -100,6 +123,30 @@ datasource.initialize().then(() => {
         try {
             const { imageText, videoId, startDate, finalMessage } = req.body
 
+            if (!imageText || !videoId || !startDate || !finalMessage) {
+                return res.status(400).json({ message: 'Campos obrigatórios ausentes.' })
+            }
+
+            const preferenceClient = new Preference(client)
+
+            const preference = await preferenceClient.create({
+                body: {
+                    items: [
+                        {
+                            title: 'Surpresa - Dicoracao',
+                            quantity: 1,
+                            unit_price: 19.90,
+                        },
+                    ],
+                    auto_return: "all",
+                    back_urls: {
+                        success: "http://localhost:5173",
+                        failure: "http://localhost:5173",
+                        pending: "http://localhost:5173"
+                    }
+                },
+            })
+
             const surpriseDTO = {
                 secondsMessage: imageText.seconds,
                 minutesMessage: imageText.minutes,
@@ -110,11 +157,12 @@ datasource.initialize().then(() => {
                 yearsMessage: imageText.years,
                 videoId,
                 startDate,
-                finalMessage
+                finalMessage,
+                paymentStatus: 'pending',
+                preferenceId: preference.id
             }
 
             const surprise = datasource.manager.create(Surprise, surpriseDTO)
-
             const surpriseReturn = await datasource.manager.save(Surprise, surprise)
 
             const surpriseFolder = join('uploads', String(surpriseReturn.id))
@@ -123,29 +171,27 @@ datasource.initialize().then(() => {
                 fs.mkdirSync(surpriseFolder, { recursive: true })
             }
 
-            if (req.files['image']) {
-                req.files['image'].forEach(file => {
-                    const tempPath = path.join('uploads', file.filename)
-                    const targetPath = path.join(surpriseFolder, file.filename)
-                    fs.renameSync(tempPath, targetPath)
-                })
+            if (req.files['images']) {
+                await moveFiles(req.files['images'], surpriseFolder)
             }
 
             if (req.files['puzzleImage']) {
-                const file = req.files['puzzleImage'][0]
-                const tempPath = path.join('uploads', file.filename)
-                const targetPath = path.join(surpriseFolder, file.filename)
-                fs.renameSync(tempPath, targetPath)
+                await moveFiles(req.files['puzzleImage'], surpriseFolder)
             }
 
-            res.send(surpriseReturn.id)
+            res.json(preference)
         } catch (error) {
             console.error(error)
+            res.status(500).json({ message: 'Erro ao criar surpresa.' })
         }
     })
 
+    app.post('/api/payment', async (req, res) => {
+        
+    })
+
     app.get('*', (_req, res) => {
-        res.sendFile('index.html', { root: 'public' })
+        res.sendFile('index.html', { root: 'dist' })
     })
 
     app.listen(3000, () => {
