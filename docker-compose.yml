@@ -1,7 +1,7 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: database
+    container_name: dicoracao_database
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -13,7 +13,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
   app:
-    container_name: app
+    container_name: dicoracao
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,6 +22,9 @@ services:
       - DB_HOST=database
     ports:
       - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules 
     depends_on:
       - mysql
 volumes:

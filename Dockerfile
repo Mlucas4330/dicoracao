@@ -1,25 +1,11 @@
-FROM node:18 AS build
+FROM node:18
 
 WORKDIR /app
 
-COPY front-end/package.json front-end/package-lock.json ./
+COPY package*.json ./
 RUN npm install
-
-COPY ../front-end/ ./
-
-RUN npm run build
-
-FROM node:16
-
-WORKDIR /app
-
-COPY back-end/package.json back-end/package-lock.json ./
-RUN npm install
-
-COPY --from=build /app/dist /app/public
 
 COPY . .
+RUN npm run build
 
-EXPOSE 3000
-
-CMD ["node", "back-end/server.js"]
+CMD ["node", "server.js"]
