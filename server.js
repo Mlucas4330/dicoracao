@@ -6,6 +6,8 @@ import path from 'path'
 import fs from 'fs'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import nodemailer from 'nodemailer'
+import qrcode from 'qrcode'
 
 const app = express()
 
@@ -123,9 +125,9 @@ datasource.initialize().then(() => {
         try {
             const { imageText, videoId, startDate, finalMessage } = req.body
 
-            if (!imageText || !videoId || !startDate || !finalMessage) {
-                return res.status(400).json({ message: 'Campos obrigatórios ausentes.' })
-            }
+            // if (!imageText || !videoId || !startDate || !finalMessage) {
+            //     return res.status(400).json({ message: 'Campos obrigatórios ausentes.' })
+            // }
 
             const preferenceClient = new Preference(client)
 
@@ -138,46 +140,46 @@ datasource.initialize().then(() => {
                             unit_price: 19.90,
                         },
                     ],
-                    auto_return: "all",
+                    auto_return: 'all',
                     back_urls: {
-                        success: "http://localhost:5173",
-                        failure: "http://localhost:5173",
-                        pending: "http://localhost:5173"
+                        success: 'http://localhost:5173',
+                        failure: 'http://localhost:5173',
+                        pending: 'http://localhost:5173'
                     }
                 },
             })
 
-            const surpriseDTO = {
-                secondsMessage: imageText.seconds,
-                minutesMessage: imageText.minutes,
-                hoursMessage: imageText.hours,
-                daysMessage: imageText.days,
-                weeksMessage: imageText.weeks,
-                monthsMessage: imageText.months,
-                yearsMessage: imageText.years,
-                videoId,
-                startDate,
-                finalMessage,
-                paymentStatus: 'pending',
-                preferenceId: preference.id
-            }
+            // const surpriseDTO = {
+            //     secondsMessage: imageText.seconds,
+            //     minutesMessage: imageText.minutes,
+            //     hoursMessage: imageText.hours,
+            //     daysMessage: imageText.days,
+            //     weeksMessage: imageText.weeks,
+            //     monthsMessage: imageText.months,
+            //     yearsMessage: imageText.years,
+            //     videoId,
+            //     startDate,
+            //     finalMessage,
+            //     paymentStatus: 'pending',
+            //     preferenceId: preference.id
+            // }
 
-            const surprise = datasource.manager.create(Surprise, surpriseDTO)
-            const surpriseReturn = await datasource.manager.save(Surprise, surprise)
+            // const surprise = datasource.manager.create(Surprise, surpriseDTO)
+            // const surpriseReturn = await datasource.manager.save(Surprise, surprise)
 
-            const surpriseFolder = join('uploads', String(surpriseReturn.id))
+            // const surpriseFolder = join('uploads', String(surpriseReturn.id))
 
-            if (!fs.existsSync(surpriseFolder)) {
-                fs.mkdirSync(surpriseFolder, { recursive: true })
-            }
+            // if (!fs.existsSync(surpriseFolder)) {
+            //     fs.mkdirSync(surpriseFolder, { recursive: true })
+            // }
 
-            if (req.files['images']) {
-                await moveFiles(req.files['images'], surpriseFolder)
-            }
+            // if (req.files['images']) {
+            //     await moveFiles(req.files['images'], surpriseFolder)
+            // }
 
-            if (req.files['puzzleImage']) {
-                await moveFiles(req.files['puzzleImage'], surpriseFolder)
-            }
+            // if (req.files['puzzleImage']) {
+            //     await moveFiles(req.files['puzzleImage'], surpriseFolder)
+            // }
 
             res.json(preference)
         } catch (error) {
@@ -186,8 +188,47 @@ datasource.initialize().then(() => {
         }
     })
 
-    app.post('/api/payment', async (req, res) => {
-        
+    app.post('/webhook', async (req, res) => {
+        try {
+            // const surprise = await datasource.manager.findOneBy(Surprise, { preferenceId: req.body.preferenceId })
+            const surprise = {
+                id: 1,
+                email: 'camisetaestranha@gmail.com'
+            }
+            surprise.paymentStatus = 'approved'
+
+            // await datasource.manager.save(Surprise, surprise)
+
+            await qrcode.toFile('uploads/qrcode.png', 'http://localhost:5173/surprises/' + surprise.id)
+
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+
+            const options = {
+                from: process.env.EMAIL,
+                to: surprise.email,
+                subject: 'Seu QrCode especial!',
+                html: `Agradecemos pela sua compra! 🎁<br><br>Aqui está o seu <strong>QrCode personalizado<strong>.<br><br>Baixe, imprima e surpreenda alguém especial com um gesto único e inesquecível!<br><br>Se precisar de qualquer suporte, estamos à disposição.<br><br>✨ Com carinho,<br>Dicoracao`,
+                attachments: [
+                    {
+                        filename: 'QrCode.png',
+                        path: 'uploads/qrcode.png'
+                    }
+                ]
+            };
+
+            await transporter.sendMail(options)
+
+            res.json('E-mail enviado com sucesso!')
+        } catch (error) {
+            console.error(error)
+            res.status(500).json({ message: 'Erro ao enviar E-mail.' })
+        }
     })
 
     app.get('*', (_req, res) => {
